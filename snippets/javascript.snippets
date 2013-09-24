@@ -172,8 +172,8 @@ snippet express.init
 	var http = require('http');
 	var path = require('path');
 	var app = module.exports = express();
+	var server = http.createServer(app);
 	var env = app.get('env');
-	var server;
 
 	// all environments
 	app.set('port', process.env.PORT || 3000);
