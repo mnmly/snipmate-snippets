@@ -156,7 +156,54 @@ snippet sing
 
 # require()
 snippet req
-	${1:module_name} = require( '${2:module}' )
+	${1:module_name} = require('${2:module}')
 # module.exports
 snippet mod
 	module.exports = ${1:module_name}
+
+# express.init
+snippet express.init
+
+	/**
+	 * Module dependencies.
+	 */
+
+	var express = require('express');
+	var http = require('http');
+	var path = require('path');
+	var app = module.exports = express();
+	var env = app.get('env');
+	var server;
+
+	// all environments
+	app.set('port', process.env.PORT || 3000);
+	app.set('views', __dirname + '/views');
+	app.set('view engine', 'jade');
+	app.use(express.favicon());
+	app.use(express.logger('dev'));
+	app.use(express.bodyParser({ limit: '8mb' }));
+	app.use(express.methodOverride());
+	app.use(express.static(path.join(__dirname, 'public')));
+	app.use(app.router);
+
+	// development only
+	if ('development' == env) {
+	  app.use(express.errorHandler());
+	}
+	
+	/**
+	 * Graceful shutdown
+	 */
+
+	function shutdown() {
+	  console.log('server: shutting down');
+	  server.close(function(){
+		console.log('server: exiting');
+		setTimeout(function() {
+		  process.exit();
+		}, 2000);
+	  });
+	}
+
+	process.on('SIGTERM', shutdown);
+	process.on('SIGQUIT', shutdown);
