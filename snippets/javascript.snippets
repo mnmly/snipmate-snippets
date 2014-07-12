@@ -157,11 +157,32 @@ snippet sing
 # require()
 snippet req
 	${1:module_name} = require('${2:module}');
-
 # module.exports
 snippet mod
 	module.exports = ${1:module_name};
-
+# restful
+snippet restful
+	// GET /
+	index: function *(next) {
+	},
+	// GET /new
+	new: function *(next) {
+	},
+	// POST /
+	create: function *(next) {
+	},
+	// GET /:id
+	show: function *(next) {
+	},
+	// GET /:id/edit
+	edit: function *(next) {
+	},
+	// PUT /:id
+	update: function *(next) {
+	},
+	// DELETE /:id
+	destroy: function *(next) {
+	}
 # express.init
 snippet express.init
 	
@@ -234,6 +255,7 @@ snippet koa.init
 	var http = require('http');
 	var port = process.env.PORT || 3000;
 	var serve = require('koa-static');
+	var route = require('koa-route');
 	var mount = require('koa-mount');
 	var builder = require('mnml-build').middleware;
 
@@ -241,8 +263,8 @@ snippet koa.init
 	 * Middlewares
 	 */
 
-	app.use(builder({bundled: true, copy: true }));
-	app.use(mount('/build', serve(__dirname + '/../../build')));
+	app.use(builder({copy: true, dev: true}));
+	app.use(mount('/build', serve(__dirname + '/build')));
 
 	/**
 	 * Listen to port
@@ -250,3 +272,52 @@ snippet koa.init
 	app.listen(port);
 	
 	console.log('App is running at PORT: %s', port);
+
+# THREE.init
+snippet THREE.init
+
+	function Boot() {
+
+	  this.scene = new THREE.Scene();
+	  this.light = new THREE.PointLight( 0xff0040, 8, 1000 );
+	  this.light.position.set(300, 300, 300);
+
+	  this.scene.add(this.light);
+
+	  this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
+	  this.camera.position.z = 1000;
+
+	  var geometry = new THREE.BoxGeometry(300, 300, 300);
+	  var material = new THREE.MeshPhongMaterial(  { ambient: 0x555555, color: 0x555555, specular: 0xffffff, shininess: 10, shading: THREE.SmoothShading } );
+	  this.mesh = new THREE.Mesh( geometry, material );
+	  this.scene.add(this.mesh);
+
+	  var sphereGeometry = new THREE.SphereGeometry( 10, 1, 1);
+	  this.sphere = new THREE.Mesh(sphereGeometry, new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }));
+	  this.scene.add(this.sphere);
+
+	  this.renderer = new THREE.WebGLRenderer();
+	  this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+	  document.body.appendChild(this.renderer.domElement);
+	  
+	  this.animate = this.animate.bind(this);
+	  this.animate();
+	}
+
+	Boot.prototype.animate = function() {
+
+	  // note: three.js includes requestAnimationFrame shim
+	  requestAnimationFrame( this.animate );
+	  if(t) {
+		this.light.position.x += 1.0 * Math.cos(t / 1000);
+		this.light.position.y += 2.0 * Math.sin(t / 1000);
+		this.light.position.z += 2.0 * Math.cos(t / 1000);
+		this.sphere.position.x = this.light.position.x;
+		this.sphere.position.y = this.light.position.y;
+		this.sphere.position.z = this.light.position.z;
+	  }
+	  this.mesh.rotation.x += 0.01;
+	  this.mesh.rotation.y += 0.02;
+	  this.renderer.render(this.scene, this.camera);
+	}
