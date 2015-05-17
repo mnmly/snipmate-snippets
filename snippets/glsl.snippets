@@ -1,3 +1,25 @@
 # require()
 snippet req
 	#pragma glslify: ${1:module_name} = require(${2:module})
+# variables
+snippet uni
+	uniform ${1:type} ${2:variableName};
+snippet attr
+	attribute ${1:type} ${2:variableName};
+snippet vary
+	varying ${1:type} ${2:variableName};
+
+# if
+snippet if
+	if (${1:true}) {
+	  ${2}
+	}
+# docstring
+snippet /**
+	/**
+	 * ${1:description}
+	 */
+snippet @par
+	@param {${1:type}} ${2:name} ${3:description}
+snippet @ret
+	@return {${1:type}} ${2:description}
