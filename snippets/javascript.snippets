@@ -153,6 +153,9 @@ snippet sing
 		return instance;
 	}
 
+# DOM createElement
+snippet create
+	var ${1:el} = document.createElement('${2:div}');
 
 # require()
 snippet req
@@ -274,50 +277,124 @@ snippet koa.init
 	console.log('App is running at PORT: %s', port);
 
 # THREE.init
-snippet THREE.init
+snippet THREE
+	var THREE = require('three')
+	var loop = require('raf-loop')
+	var fitter = require('canvas-fit')
+	var OrbitControl = require('three-orbit-controls')(THREE)
 
-	function Boot() {
+	module.exports = App;
 
-	  this.scene = new THREE.Scene();
-	  this.light = new THREE.PointLight( 0xff0040, 8, 1000 );
-	  this.light.position.set(300, 300, 300);
+	function App() {
 
-	  this.scene.add(this.light);
+	  this.scene = new THREE.Scene()
+	  this.camera = this.getCamera()
+	  this.canvas = document.createElement('canvas')
+	  this.controls = new OrbitControl(this.camera, this.canvas)
 
-	  this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 10000);
-	  this.camera.position.z = 1000;
+	  this.fit = fitter(this.canvas)
+	  this.fit.scale = window.devicePixelRatio || 1.0
 
-	  var geometry = new THREE.BoxGeometry(300, 300, 300);
-	  var material = new THREE.MeshPhongMaterial(  { ambient: 0x555555, color: 0x555555, specular: 0xffffff, shininess: 10, shading: THREE.SmoothShading } );
-	  this.mesh = new THREE.Mesh( geometry, material );
-	  this.scene.add(this.mesh);
+	  this.renderer = new THREE.WebGLRenderer({
+	    canvas: this.canvas
+	  })
 
-	  var sphereGeometry = new THREE.SphereGeometry( 10, 1, 1);
-	  this.sphere = new THREE.Mesh(sphereGeometry, new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true }));
-	  this.scene.add(this.sphere);
+	  this.camera.position.set(0, 0, 10.0)
+	  this.camera.lookAt(this.scene.position)
 
-	  this.renderer = new THREE.WebGLRenderer();
-	  this.renderer.setSize(window.innerWidth, window.innerHeight);
+	  this.setupScene()
 
-	  document.body.appendChild(this.renderer.domElement);
-	  
-	  this.animate = this.animate.bind(this);
-	  this.animate();
+	  this.engine = loop()
+	  this.engine.on('tick', this.render.bind(this))
+
+	  window.addEventListener('resize', this.resize.bind(this), false)
 	}
 
-	Boot.prototype.animate = function() {
-
-	  // note: three.js includes requestAnimationFrame shim
-	  requestAnimationFrame( this.animate );
-	  if(t) {
-		this.light.position.x += 1.0 * Math.cos(t / 1000);
-		this.light.position.y += 2.0 * Math.sin(t / 1000);
-		this.light.position.z += 2.0 * Math.cos(t / 1000);
-		this.sphere.position.x = this.light.position.x;
-		this.sphere.position.y = this.light.position.y;
-		this.sphere.position.z = this.light.position.z;
-	  }
-	  this.mesh.rotation.x += 0.01;
-	  this.mesh.rotation.y += 0.02;
-	  this.renderer.render(this.scene, this.camera);
+	App.prototype.getCamera = function() {
+	  return new THREE.PerspectiveCamera()
 	}
+
+	App.prototype.setupScene = function() {
+
+	  var geo = new THREE.BoxGeometry(1.0, 1.0, 1.0)
+	  var mat = new THREE.MeshBasicMaterial({ color: 'white', wireframe: true })
+	  var mesh = new THREE.Mesh(geo, mat)
+	  this.mesh = mesh
+	  this.scene.add(mesh)
+	}
+
+	App.prototype.start = function() {
+	  this.engine.start()
+	}
+
+	App.prototype.render = function() {
+	  this.renderer.render(this.scene, this.camera)
+	}
+
+	App.prototype.appendTo = function(p) {
+	  p.appendChild(this.canvas)
+	  this.resize()
+	}
+
+	App.prototype.resize = function() {
+	  this.fit()
+	  this.camera.aspect = this.canvas.width / this.canvas.height
+		this.camera.updateProjectionMatrix();
+	  this.renderer.setViewport(0, 0, this.canvas.width, this.canvas.height)
+	}
+
+snippet gsap
+	require('gsap/src/uncompressed/plugins/CSSPlugin')
+	require('gsap/src/uncompressed/easing/EasePack')
+	var TimelineLite = require('gsap/src/uncompressed/TimelineLite')
+	var TweenLite = require('gsap/src/uncompressed/TweenLite')
+
+snippet easeInCubic
+	cubic-bezier(0.550, 0.055, 0.675, 0.190)
+snippet easeOutCubic
+	cubic-bezier(0.215, 0.610, 0.355, 1.000)
+snippet easeInOutCubic
+	cubic-bezier(0.645, 0.045, 0.355, 1.000)
+snippet easeInCirc
+	cubic-bezier(0.600, 0.040, 0.980, 0.335)
+snippet easeOutCirc
+	cubic-bezier(0.075, 0.820, 0.165, 1.000)
+snippet easeInOutCirc
+	cubic-bezier(0.785, 0.135, 0.150, 0.860)
+snippet easeInExpo
+	cubic-bezier(0.950, 0.050, 0.795, 0.035)
+snippet easeOutExpo
+	cubic-bezier(0.190, 1.000, 0.220, 1.000)
+snippet easeInOutExpo
+	cubic-bezier(1.000, 0.000, 0.000, 1.000)
+snippet easeInQuad
+	cubic-bezier(0.550, 0.085, 0.680, 0.530)
+snippet easeOutQuad
+	cubic-bezier(0.250, 0.460, 0.450, 0.940)
+snippet easeInOutQuad
+	cubic-bezier(0.455, 0.030, 0.515, 0.955)
+snippet easeInQuart
+	cubic-bezier(0.895, 0.030, 0.685, 0.220)
+snippet easeOutQuart
+	cubic-bezier(0.165, 0.840, 0.440, 1.000)
+snippet easeInOutQuart
+	cubic-bezier(0.770, 0.000, 0.175, 1.000)
+snippet easeInQuint
+	cubic-bezier(0.755, 0.050, 0.855, 0.060)
+snippet easeOutQuint
+	cubic-bezier(0.230, 1.000, 0.320, 1.000)
+snippet easeInOutQuint
+	cubic-bezier(0.860, 0.000, 0.070, 1.000)
+snippet easeInSine
+	cubic-bezier(0.470, 0.000, 0.745, 0.715)
+snippet easeOutSine
+	cubic-bezier(0.390, 0.575, 0.565, 1.000)
+snippet easeInOutSine
+	cubic-bezier(0.445, 0.050, 0.550, 0.950)
+snippet easeInBack
+	cubic-bezier(0.600, -0.280, 0.735, 0.045)
+snippet easeOutBack
+	cubic-bezier(0.175,	0.885, 0.320, 1.275)
+snippet easeInOutBack
+	cubic-bezier(0.680, -0.550, 0.265, 1.550)
+

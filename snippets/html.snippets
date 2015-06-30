@@ -449,12 +449,12 @@ snippet html5
 	<!DOCTYPE html>
 	<html>
 		<head>
-			<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+			<meta name="viewport" content="width=device-width, initial-scale=1">
 			<title>${1:`substitute(Filename('', 'Page Title'), '^.', '\u&', '')`}</title>
-			${2:meta}
+			<link rel="stylesheet" href="build/build.css" type="text/css" media="all" />
 		</head>
 		<body>
-			${3:body}
+			<script type="text/javascript" src='build/build.js'></script>
 		</body>
 	</html>
 snippet i
