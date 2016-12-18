@@ -1,15 +1,3 @@
-# Component
-snippet component.json
-	{
-	  "name": "${1:component_name}",
-	  "dependencies": {},
-	  "scripts": [
-		  "index.js"
-	  ],
-	  "styles":[],
-	  "locals": []
-	}
-
 snippet comp
 	"${1:author}/${2:name}": "*",
 
@@ -20,28 +8,32 @@ snippet package
 	  "description": "",
 	  "main": "index.js",
 	  "scripts": {
-		  "start": "parallelshell \"npm run watch:js\" \"npm run watch:css\"",
-		  "build": "npm run build:js && npm run build:css",
-		  "watch:css": "onchange 'demo.css' -- npm run build:css",
-		  "watch:js": "budo demo.js:bundle.js -v -t glslify --live -- -t [ installify --save ] | garnish",
-		  "build:js": "browserify demo.js -t glslify -o bundle.js",
-		  "build:css": "styl -w < demo.css > bundle.css"
+		"start": "parallelshell \"npm run watch:js\" \"npm run watch:css\"",
+		"build": "npm run build:js && npm run build:css",
+		"watch:css": "onchange 'demo.css' -- npm run build:css",
+		"watch:js": "budo demo.js:bundle.js -v --live -- -t [babelify --presets [es2015] ] -t [ installify --save ] -t [glslify]",
+		"build:js": "browserify demo.js -- -t [babelify --presets [es2015] ] -t [ installify --save ] -t [glslify] -o bundle.js",
+		"build:css": "styl -w < demo.css > bundle.css"
 	  },
 	  "author": "",
-	  "license": "ISC",
+	  "license": "MIT",
 	  "devDependencies": {
-		  "browserify": "^10.2.4",
-		  "budo": "^4.0.0",
-		  "garnish": "^2.1.3",
-		  "installify": "^1.0.2",
-		  "onchange": "^1.1.0",
-		  "parallelshell": "^1.1.1",
-		  "styl": "^0.2.9"
+		"babel-preset-es2015": "^6.18.0",
+		"babelify": "^7.3.0",
+		"browserify": "^13.0.1",
+		"budo": "^9.2.1",
+		"installify": "^1.0.2",
+		"onchange": "^3.0.0",
+		"parallelshell": "^2.0.0",
+		"styl": "^0.2.9"
 	  },
 	  "dependencies": {
-		  "glslify": "^2.2.1"
+		"glslify": "^6.0.0",
+		"regl": "^1.3.0",
+		"remap": "mnmly/remap"
 	  }
 	}
+
 
 snippet tern
 	{
